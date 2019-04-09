@@ -43,24 +43,28 @@ public class MainActivity extends AppCompatActivity {
                 String key = myRef.child("Favorite Pet Votes").push().getKey();
                 // ---- set up the vote
                 String msgText = etChatMessage.getText().toString();
-
-                Vote vote = new Vote(voteText, voteNum);
-                // ---- write the vote to Firebase
-                myDbRef.child("Favorite Pet Votes").child(key).setValue(vote);
+                // ---- write the message to Firebase
+                myRef.child(key).setValue(msgText);
+                etChatMessage.setText("");           // clear out the all votes text box
             }
         });
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                tvMsgList.setText("");           // clear out the all votes text box
+                // loop through all the votes returned
+                for (DataSnapshot msgSnapshot : dataSnapshot.getChildren()) {
+                    String msg = msgSnapshot.getValue(String.class);          // get the current vote from the data set returned
+                    tvMsgList.append("\n" + msg);            // display the vote in the edit text widget
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        })
+        });
 
     }
 }
